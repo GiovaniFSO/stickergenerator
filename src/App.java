@@ -1,34 +1,30 @@
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
-public class App {
+public class  App {
     public static void main(String[] args) throws Exception{
         String url = "https://api.mocki.io/v2/549a5d8b";
-        URI address = URI.create(url);
-        var client = HttpClient.newHttpClient();
-        var request = HttpRequest.newBuilder(address).GET().build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String body = response.body();
+        var extractor = new ContentExtractorIMDB();
+        //String url = "https://api.mocki.io/v2/549a5d8b/NASA-APOD";
+        //var extractor = new ContentExtractorNasa();
 
-        var parser = new JsonParser();
-        List<Map<String, String>> listaDeFilme = parser.parse(body);
+        var http = new ClientHttp();
+        String json = http.searchData(url);
+
+
+        List<Content> contentList =  extractor.extractContents(json);
+
         var generator = new StickerGenerator();
-        for (Map<String, String> filme: listaDeFilme) {
-            String imageUrl = filme.get("image");
-            String title = filme.get("title");
-            InputStream inputStream = new URL(imageUrl).openStream();
+        for (int i = 0; i < 3; i++){
+            Content content = contentList.get(i);
 
-            String filename = title + ".png";
+            InputStream inputStream = new URL(content.getUrlImage()).openStream();
+            String filename = "output/"+ content.getTitle() + ".png";
 
             generator.create(inputStream, filename);
-            System.out.println(filme.get("title"));
-            System.out.println();
+            System.out.println(content.getTitle());
         }
     }
 

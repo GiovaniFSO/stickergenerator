@@ -22,6 +22,6 @@ public class StickerGenerator {
         graphics.setColor(Color.YELLOW);
         graphics.setFont(font);
         graphics.drawString("The Best Movie", 100, newHeight - 100);
-        ImageIO.write(newImage, "png", new File("output/"+nomeArquivo));
+        ImageIO.write(newImage, "png", new File(nomeArquivo));
     }
 }
